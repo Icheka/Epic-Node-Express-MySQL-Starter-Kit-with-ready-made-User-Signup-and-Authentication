@@ -8,7 +8,7 @@ const _auth = require("./middlewares/__auth");
 
 // routes 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/user');
+const usersRouter = require('./routes/user/signup');
 const four_oh_four = require("./utils/404");
 
 

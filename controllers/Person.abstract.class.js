@@ -1,0 +1,6 @@
+class Person {
+    constructor(person) {
+        
+    }
+    
+}

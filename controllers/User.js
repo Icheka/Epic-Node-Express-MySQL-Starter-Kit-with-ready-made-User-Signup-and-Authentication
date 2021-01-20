@@ -1,5 +1,6 @@
+const Person = require("./Person.abstract.class");
 
-class User {
+class User extends Person {
     signup(obj) {
 
     }
