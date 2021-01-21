@@ -6,5 +6,6 @@ module.exports = {
     /*
     "users": "tblusers"
     */
-   "users": "tblusers"
+   "users": "users",
+   "user": "users"
 }

@@ -1,17 +1,35 @@
 const conn = require("../db/index");
 const Tables = require("../db/tables.js");
+const Person_model = require('./Person.abstract.model');
 
-class User_model {
+class User_model extends Person_model {
+    constructor() {
+        super("user");
+        this.role = "user";
+    }
 
+    async signup(obj) {
+        let VALUES = [];
+        Object.values(obj).forEach(param => VALUES.push(param));
 
-    async find(param, value) {
-        let sql = `SELECT * FROM ${Tables.users} WHERE ${param} = ?`;
-        let values = [value];
-        const obj = await conn(sql, values);
-        return obj;
+        let SQL = `INSERT INTO ${Tables.user} (`;
+        Object.keys(obj).forEach(key => {
+            SQL += `${key},`;
+        });
+        SQL = SQL.slice(0, -1);
+
+        SQL += ") VALUES (";
+
+        VALUES.forEach(v => SQL += "?, ");
+        SQL = SQL.slice(0, -2);
+        SQL += ")";
+
+        // return SQL;
+        return await conn(SQL, VALUES);
     }
 }
 
 module.exports = {
-    find: new User_model().find
+    find: new User_model().find,
+    signup: new User_model().signup
 }

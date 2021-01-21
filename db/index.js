@@ -1,5 +1,6 @@
 const dotenv = require("dotenv");
 const mysql2 = require("mysql2");
+const _Error = require("../_handlers/_Error.class");
 
 dotenv.config();
 
@@ -23,17 +24,19 @@ class DB_Connection {
     testConnection() {
         this.conn.getConnection((err, connection) => {
             if (err) {
-                // there are several reasons why an error might occurr during a server-database handshake
+                // there are several reasons why an error might occur during a server-database handshake
                 switch(err.code) {
                     case "PROTOCOL_CONNECTION_LOST":
-                        console.log("The connection to the database was destroyed.");
+                        _Error.log("#/db/index.js", "The connection to the database was destroyed.");
+                        // console.log("The connection to the database was destroyed.");
                         break;
                     case "ECONNREFUSED":
-                        console.log("The connection to the database was refused.");
+                        _Error.log("#/db/index.js", "The connection to the database was either rejected or didn't go through. Is the database server online?");
+                        // console.log("The connection to the database was either rejected or didn't go through. Is the database server online?");
                         break;
                     case "ER_CON_COUNT_ERROR":
                         console.log(`The number of connections to the database has exceeded its limit.
-                        Consider increasing the connection limit (default = 10) or optimizing your code.
+                        Consider increasing the connection limit (default = 10) or refactoring your code.
                         `);
                         break;
                 }
@@ -60,7 +63,7 @@ class DB_Connection {
             // if <errors> includes the code for the error <err>, assign the corresponding error status code to
             // err.status. If it doesn't, leave err.status as it is.
             err.status = errors.includes(err.code) ? MySql2HttpCodeMap[err.code] : err.status;
-            
+             
             throw err;
         });
     }

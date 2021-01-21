@@ -5,12 +5,15 @@ const logger = require('morgan');
 const dotenv = require("dotenv");
 const cors = require("cors");
 const _auth = require("./middlewares/__auth");
+const _handler = require("./_handlers/index");
 
 // routes 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/user/signup');
+const userRouter = require('./routes/user/index');
+const usersRouter = require('./routes/users/index');
 const four_oh_four = require("./utils/404");
 
+_handler._error.guard();
 
 const app = express();
 dotenv.config();
@@ -33,7 +36,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', _auth(), usersRouter);
+// :>>
+app.use('/user', _auth(), userRouter);
+// :>> User| sign up
+app.use('/users', usersRouter);
+app.use("/s", indexRouter);
 
 
 /* This block must be kept below ALL of your routes */

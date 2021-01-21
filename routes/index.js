@@ -1,10 +1,11 @@
 var express = require('express');
-const HTTPError=require('../utils/Http.class');
+const HttpClass=require('../utils/Http.class');
 var router = express.Router();
+const conn = require("../db/index");
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', async function (req, res, next) {
+  res.render('index', { title: 'E?xpress' });
 });
 
 module.exports = router;

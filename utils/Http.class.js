@@ -1,13 +1,23 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+require("dotenv").config();
 
-class HTTPError {
+class _HTTPClass {
     constructor() {
         this.incoming_Message = "Incoming";
         this.outgoing_Message = "Outgoing";
     }
 
+    /**
+     * emit(string res, string status_code, string header, string message): void
+     * 
+     * @param {*string} res 
+     * @param {*string} status_code 
+     * @param {string} header 
+     * @param {*string} message 
+     * @param {} data 
+     */
     emit(res, status_code, header, message, data=null) {
         
         const headers = {
@@ -16,7 +26,8 @@ class HTTPError {
             404: "Resource Not Found",
             406: "Unacceptable Parameters In Request Body",
             400: "Malformed Request",
-            401: "Unauthorized: Bearer token verification failed"
+            401: "Unauthorized: Bearer token verification failed",
+            409: "Conflict"
         }
 
         const headers_array = Object.keys(headers);
@@ -28,45 +39,58 @@ class HTTPError {
         this.header = header;
         this.message = message;
 
+        let payload;
         if (data !== null) {
-            res.status(status_code).send({
-                header, message, data
-            });
+            payload = { header, message, data }
+            res.status(status_code).send(payload);
         } else {
-            res.status(status_code).send({
-                header, message
-            });
+            payload = { header, message };
+            res.status(status_code).send(payload);
+            payload.status = status_code;
         }
 
-        this.log(null, res);
+        this.log(payload, "res");
     }
 
-    log(req, res="Incoming") {
+    log(obj, type) {
+        if (type == undefined) {
+            throw new Error("<type> cannot be undefined!");
+            return;
+        }
+        if (typeof obj !== 'object') {
+            throw new Error("<type> cannot be a non-object!");
+            return;
+        }
 
-        const ip = req !== null ? req.headers['x-forwarded-for'] || req.connection.remoteAddress : this.outgoing_Message;
+        type = type.toLowerCase();
 
-        req = req == null ? {
-            originalUrl: this.outgoing_Message,
-            method: this.outgoing_Message,
-            body: this.outgoing_Message
-        } : req;
-
-        const logFilePath = path.join(__dirname, "../logs/req_res.logs.txt");
-        const logMessage = `
-==============================
+        if (type == "req") {
+            var logFilePath = process.env.REQUEST_LOG_PATH || path.join(__dirname, "../logs/req_res.logs.txt");
+            const ip = obj.headers['x-forwarded-for'] || obj.connection.remoteAddress;
+            var logMessage = 
+`==============================
 Time & Date: ${new Date().toLocaleString()}
 Request:
         IP Address: ${ip}
-        To: ${req.originalUrl}
-        Method: ${req.method}
-        Body: ${JSON.stringify(req.body)}
+        To: ${obj.originalUrl}
+        Method: ${obj.method}
+        Body: ${JSON.stringify(obj.body)}
+`
+        } else if (type == "res") {
+            var logFilePath = process.env.RESPONSE_LOG_PATH || path.join(__dirname, "../logs/req_res.logs.txt");
+            var logMessage = 
+`==============================
 Response:
-        Status Code: ${JSON.stringify(res.status) || "200 OK"}
-        Body: ${JSON.stringify(res.body) || "No Body"}
-==============================`;
+    Status Code: ${JSON.stringify(obj.status) || "200 OK"}
+    Body: ${JSON.stringify(obj) || "No Body"}    
+`
+        } else {
+            throw new Error("<type> must be either a <request> object or a <response> object!");
+            return;
+        }
 
         fs.appendFile(logFilePath, logMessage, err => {if (err) throw err});
     }
 }
 
-module.exports = HTTPError;
+module.exports = _HTTPClass;
