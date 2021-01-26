@@ -69,7 +69,6 @@ class User extends Person {
 
             // >>> {3}
             let possible_emails = await this.find("email", obj.email);
-            // console.log("POSSIBLE EMAILS: ", possible_emails);
             if (possible_emails.length > 0) {
                 // email found in database
                 return [409, null, "An account associated with this email already exists."];
@@ -83,7 +82,7 @@ class User extends Person {
                 delete obj.password;
                 obj.created_at = this.getCurrentTimeStamp();
                 result = User_model.signup(obj);
-                return [200, null, "Good boy!", obj];
+                return [200, null, "Account created successfully!", obj];
             }
 
         }
@@ -102,18 +101,32 @@ class User extends Person {
         if (validation_result['bool'] !== true) {
            if (validation_result['code'] == 0) {
                 return [406, null, "The request body does not match the expected object. Check parameter names, request object length."];
-           } else if (validation_result['code' == 1]) {
+            } else if (validation_result['code'] == 1) {
                return [400, null, "The request body lacks one or more required parameters or one or more parameters have been passed in an unacceptable format."];
            }
         } else {
             obj = _handler.rearrangeRequestObject(X_signin, obj);
-            // {2}
+            // {3}
             let user = await this.find("email", obj.email);
-            console.log(user)
+            if (user.length == 0) {
+                // user not found
+                return [404, null, "No user with that email address was found."];
+            } else {
+                // {4}
+                let password_compare_result = await _handler.compare_passwords(obj.password, user[0].pass);
+                if (password_compare_result == false) {
+                    // password failed verification
+                    return [401, "Unauthorized: Invalid Password", "Invalid password"];
+                } else {
+                    // password passed verification
+                    return [200, null, "Authorized: User account authenticated", { email: obj.email, bearer: user[0].pass }];
+                }
+            }
 
        }
 
-       return [200, null, "Good boy!", obj];
+
+        return [200, null, "Good boy!", obj];
     }
 }
 

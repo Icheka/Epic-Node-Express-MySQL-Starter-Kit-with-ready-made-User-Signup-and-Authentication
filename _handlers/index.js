@@ -20,6 +20,10 @@ class _Handler {
         return await bcrypt.hash(password, parseInt(process.env.SALT))
     }
 
+    async compare_passwords(password, hashed) {
+        return await bcrypt.compare(password, hashed);
+    }
+
     rearrangeRequestObject(model, obj) {
         let tmp_obj = {};
         Object.keys(model).forEach(param => {
