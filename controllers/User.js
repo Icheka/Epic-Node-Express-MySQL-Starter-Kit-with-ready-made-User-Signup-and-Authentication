@@ -5,7 +5,7 @@ const HttpClass = require("../utils/Http.class");
 
 // _handler._check schemas
 const X_schemas = require("../_handlers/schema");
-const { X_signup } = X_schemas;
+const { X_signup, X_signin } = X_schemas;
 class User extends Person {
 
     find(param, value) {
@@ -51,7 +51,6 @@ class User extends Person {
         5. Generate user_id
         6. Insert
         */
-       obj = _handler.rearrangeRequestObject(X_signup, obj);
 
         const Http = new HttpClass();
         // >>> {1}
@@ -60,6 +59,7 @@ class User extends Person {
             // return [406, null, result];
             return [406, null, "Some parameters were unacceptable. Check that your params are up to the required lengths and are names appropriately"];
         } else {
+            obj = _handler.rearrangeRequestObject(X_signup, obj);
             // checks confirmed. Can continue with normal program flow.
             // {2}
             if (this.verifyEmail(obj.email) == false) return [406, "Invalid Email", "Invalid email supplied"];
@@ -86,8 +86,34 @@ class User extends Person {
                 return [200, null, "Good boy!", obj];
             }
 
-            return [200, null, "Good boy!", obj];
         }
+    } // end of signup()
+
+    async signin(obj) {
+        /*
+        1. Test with _validate
+        2. Return appropriate message if check == fail
+        3. Find user by email: return 404 if user == null
+        4. Compare passwords: return 
+        */
+        // {1}
+       let validation_result = _handler._validate(X_signin, obj);
+
+        if (validation_result['bool'] !== true) {
+           if (validation_result['code'] == 0) {
+                return [406, null, "The request body does not match the expected object. Check parameter names, request object length."];
+           } else if (validation_result['code' == 1]) {
+               return [400, null, "The request body lacks one or more required parameters or one or more parameters have been passed in an unacceptable format."];
+           }
+        } else {
+            obj = _handler.rearrangeRequestObject(X_signin, obj);
+            // {2}
+            let user = await this.find("email", obj.email);
+            console.log(user)
+
+       }
+
+       return [200, null, "Good boy!", obj];
     }
 }
 
