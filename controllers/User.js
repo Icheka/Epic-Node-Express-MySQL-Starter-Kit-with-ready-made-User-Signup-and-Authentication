@@ -122,11 +122,24 @@ class User extends Person {
                     return [200, null, "Authorized: User account authenticated", { email: obj.email, bearer: user[0].pass }];
                 }
             }
-
        }
 
+    }
 
-        return [200, null, "Good boy!", obj];
+    async isUserExists(user_id) {
+        let user = await this.find("user_id", user_id);
+        // console.log(user[0]);
+        if (user.length == 0) return false;
+        return user[0];
+    }
+
+    /**
+     * 
+     * @param {*} password 
+     * @param {*} hashed 
+     */
+    async confirmUserPassword(password, hashed) {
+        return await _handler.compare_passwords(password, hashed);   
     }
 }
 

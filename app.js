@@ -11,6 +11,7 @@ const _handler = require("./_handlers/index");
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/user/index');
 const usersRouter = require('./routes/users/index');
+const plotsRouter = require("./routes/plots/index");
 const four_oh_four = require("./utils/404");
 
 _handler._error.guard();
@@ -40,7 +41,7 @@ app.use('/', indexRouter);
 app.use('/user', _auth(), userRouter);
 // :>> User| sign up
 app.use('/users', usersRouter);
-app.use("/s", indexRouter);
+app.use('/plots', _auth(), plotsRouter);
 
 
 /* This block must be kept below ALL of your routes */

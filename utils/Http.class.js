@@ -27,7 +27,8 @@ class _HTTPClass {
             406: "Unacceptable Parameters In Request Body",
             400: "Malformed Request",
             401: "Unauthorized: Bearer token verification failed",
-            409: "Conflict"
+            409: "Conflict",
+            402: "Unauthorized: Authorization header(s) absent in request"
         }
 
         const headers_array = Object.keys(headers);

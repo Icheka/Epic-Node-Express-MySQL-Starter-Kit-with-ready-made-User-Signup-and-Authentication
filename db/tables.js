@@ -7,5 +7,8 @@ module.exports = {
     "users": "tblusers"
     */
    "users": "users",
-   "user": "users"
+   "user": "users",
+   "plots": "plots",
+   "estates": "estates",
+   "plot_images": "plot_images"
 }

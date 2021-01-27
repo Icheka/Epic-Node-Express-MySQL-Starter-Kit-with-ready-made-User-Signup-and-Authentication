@@ -1,12 +1,12 @@
 const express = require("express");
-const route = express.Router();
+const router = express.Router();
 const User = require("../../controllers/User");
 const HttpClass = require("../../utils/Http.class");
 
 /**
  * Route: Sign Up
  */
-route.put("/", async (req, res, next) => {
+router.put("/", async (req, res, next) => {
     const Http = new HttpClass();
     Http.log(req, "req");
     const result = await User.signup(req.body);
@@ -16,11 +16,11 @@ route.put("/", async (req, res, next) => {
 /**
  * Route: Sign In
  */
-route.post("/", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
     const Http = new HttpClass();
     Http.log(req, "req");
     const result = await User.signin(req.body);
     Http.emit(res, ...result);
 });
 
-module.exports = route;
+module.exports = router;
